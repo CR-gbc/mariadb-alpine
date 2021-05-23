@@ -19,6 +19,7 @@ SHELL ["/bin/ash", "-euo", "pipefail", "-c"]
 RUN \
   apk add --no-cache mariadb=10.4.18-r0 && \
   TO_KEEP=$(echo " \
+    usr/bin/mysql$ \
     usr/bin/mysqld$ \
     usr/bin/mariadb$ \
     usr/bin/getconf$ \
