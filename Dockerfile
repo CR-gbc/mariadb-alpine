@@ -22,10 +22,11 @@ RUN \
     usr/bin/mysql$ \
     usr/bin/mysqld$ \
     usr/bin/mariadb$ \
+    usr/bin/mariadbd$ \
     usr/bin/getconf$ \
     usr/bin/getent$ \
     usr/bin/my_print_defaults$ \
-    usr/bin/mariadb_install_db$ \
+    usr/bin/mariadb-install-db$ \
     usr/share/mariadb/charsets \
     usr/share/mariadb/english \
     usr/share/mariadb/mysql_system_tables.sql$ \
@@ -44,8 +45,9 @@ RUN \
   touch /usr/share/mariadb/mysql_test_db.sql && \
   # allow anyone to connect by default
   sed -i -e 's/127.0.0.1/%/' /usr/share/mariadb/mysql_system_tables_data.sql && \
-  mkdir /run/mysqld && \
-  chown 1001:0 /etc/my.cnf.d/ /run/mysqld /usr/share/mariadb/mysql_system_tables_data.sql
+  mkdir -p /run/mysqld /var/lib/mysql && \
+  sed -i 's/\(mysql:x:\)[0-9]*:[0-9]*:/\1'"1001"':'"0"':/' /etc/passwd && \
+  chown 1001:0 /etc/my.cnf.d/ /run/mysqld /var/lib/mysql /usr/share/mariadb/mysql_system_tables_data.sql
 
 # The one installed by MariaDB was removed in the clean step above due to its large footprint
 COPY sh/resolveip.sh /usr/bin/resolveip
@@ -62,3 +64,5 @@ HEALTHCHECK --start-period=5s CMD pgrep mysqld
 VOLUME ["/var/lib/mysql"]
 ENTRYPOINT ["/run.sh"]
 EXPOSE 3306
+
+USER 1001
