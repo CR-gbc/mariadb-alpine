@@ -34,7 +34,7 @@ if [ -z "$(ls -A /var/lib/mysql/ 2> /dev/null)" ]; then
   INSTALL_OPTS="${INSTALL_OPTS} --auth-root-authentication-method=normal"
   INSTALL_OPTS="${INSTALL_OPTS} --skip-test-db"
   INSTALL_OPTS="${INSTALL_OPTS} --datadir=/var/lib/mysql"
-  eval /usr/bin/mysql_install_db "${INSTALL_OPTS}"
+  eval /usr/bin/mariadb_install_db "${INSTALL_OPTS}"
 
   if [ -n "${MYSQL_DATABASE}" ]; then
     [ -n "${MYSQL_CHARSET}" ] || MYSQL_CHARSET="utf8"
