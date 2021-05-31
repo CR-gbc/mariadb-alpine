@@ -25,7 +25,7 @@ RUN \
     usr/bin/getconf$ \
     usr/bin/getent$ \
     usr/bin/my_print_defaults$ \
-    usr/bin/mysql_install_db$ \
+    usr/bin/mariadb_install_db$ \
     usr/share/mariadb/charsets \
     usr/share/mariadb/english \
     usr/share/mariadb/mysql_system_tables.sql$ \
@@ -38,13 +38,14 @@ RUN \
   $(apk info -q -L mariadb-common | tail -n +2) \
   $(apk info -q -L mariadb | tail -n +2)" && \
   for path in $(echo "${INSTALLED_FILES}" | grep -v -E "${TO_KEEP}"); do \
+    echo "deleting ${path}"; \
     eval rm -rf "${path}"; \
   done && \
   touch /usr/share/mariadb/mysql_test_db.sql && \
   # allow anyone to connect by default
   sed -i -e 's/127.0.0.1/%/' /usr/share/mariadb/mysql_system_tables_data.sql && \
   mkdir /run/mysqld && \
-  chown mysql:mysql /etc/my.cnf.d/ /run/mysqld /usr/share/mariadb/mysql_system_tables_data.sql
+  chown 1001:0 /etc/my.cnf.d/ /run/mysqld /usr/share/mariadb/mysql_system_tables_data.sql
 
 # The one installed by MariaDB was removed in the clean step above due to its large footprint
 COPY sh/resolveip.sh /usr/bin/resolveip
