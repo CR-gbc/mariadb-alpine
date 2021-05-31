@@ -47,7 +47,8 @@ RUN \
   sed -i -e 's/127.0.0.1/%/' /usr/share/mariadb/mysql_system_tables_data.sql && \
   mkdir -p /run/mysqld /var/lib/mysql && \
   sed -i 's/\(mysql:x:\)[0-9]*:[0-9]*:/\1'"1001"':'"0"':/' /etc/passwd && \
-  chown 1001:0 /etc/my.cnf.d/ /run/mysqld /var/lib/mysql /usr/share/mariadb/mysql_system_tables_data.sql
+  chown 1001:0 /etc/my.cnf.d/ /run/mysqld /var/lib/mysql /usr/share/mariadb/mysql_system_tables_data.sql && \
+  chmod 770 /var/lib/mysql 
 
 # The one installed by MariaDB was removed in the clean step above due to its large footprint
 COPY sh/resolveip.sh /usr/bin/resolveip
