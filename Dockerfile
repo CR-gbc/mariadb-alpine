@@ -47,6 +47,8 @@ RUN \
   sed -i -e 's/127.0.0.1/%/' /usr/share/mariadb/mysql_system_tables_data.sql && \
   mkdir -p /run/mysqld /var/lib/mysql && \
   sed -i 's/\(mysql:x:\)[0-9]*:[0-9]*:/\1'"1001"':'"0"':/' /etc/passwd && \
+  sed -i 's/chown \$user \"\$dir\"//' /usr/bin/mariadb-install-db && \
+  sed -i 's/chmod 700 \"\$dir\"//' /usr/bin/mariadb-install-db && \
   chown 1001:0 /etc/my.cnf.d/ /run/mysqld /var/lib/mysql /usr/share/mariadb/mysql_system_tables_data.sql && \
   chmod 770 /var/lib/mysql 
 
