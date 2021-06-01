@@ -50,7 +50,7 @@ RUN \
   sed -i 's/chown \$user \"\$dir\"//' /usr/bin/mariadb-install-db && \
   sed -i 's/chmod 700 \"\$dir\"//' /usr/bin/mariadb-install-db && \
   chown 1001:0 /etc/my.cnf.d/ /run/mysqld /var/lib/mysql /usr/share/mariadb/mysql_system_tables_data.sql && \
-  chmod 770 /var/lib/mysql 
+  chmod 770 /var/lib/mysql /run/mysqld
 
 # The one installed by MariaDB was removed in the clean step above due to its large footprint
 COPY sh/resolveip.sh /usr/bin/resolveip
