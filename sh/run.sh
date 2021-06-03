@@ -46,53 +46,8 @@ if [ -z "$(ls -A /var/lib/mysql/ 2> /dev/null)" ]; then
   fi
   echo "flush privileges;" >> /tmp/init
 
-  # Execute custom scripts provided by a user. This will spawn a mysqld and
-  # pass scripts to it. Since we're already up an running we might as well
-  # pass the init script and avoid it later.
-  if [ "$(ls -A /docker-entrypoint-initdb.d 2> /dev/null)" ]; then
-    # Download the mysql client since we will need it to feed data to our server.
-    # This kind of sucks but seems unavoidable since using --init-file
-    # has size restrictions:
-    #   ERROR: 1105  Boostrap file error. Query size exceeded 20000 bytes near <snip>
-    # The other option is to embed the client, but since one of the goals is to
-    # Strive for the smallest possible size, this seems to be the only option.
-    echo "init: installing mysql client"
-    apk add -q --no-cache mariadb-client
-
-    SOCKET="/run/mysqld/mysqld.sock"
-    MYSQL_CMD="mysql"
-
-    # Start a mysqld we will use to pass init stuff to. Can't use the same options
-    # as a standard instance; pass them manually.
-    mysqld --user=mysql --silent-startup --skip-networking --socket=${SOCKET} > /dev/null 2>&1 &
-    PID="$!"
-
-    # perhaps trap this to avoid issues on slow systems?
-    sleep 1
-
-    # Run the init script
-    echo "init: updating system tables"
-    eval "${MYSQL_CMD}" < /tmp/init
-
-    # Default scope is our newly created database
-    MYSQL_CMD="${MYSQL_CMD} ${MYSQL_DATABASE} "
-
-    for f in /docker-entrypoint-initdb.d/*; do
-      case "${f}" in
-        *.sh)     echo "init: executing ${f}"; /bin/sh "${f}" ;;
-        *.sql)    echo "init: adding ${f}"; eval "${MYSQL_CMD}" < "${f}" ;;
-        *.sql.gz) echo "init: adding ${f}"; gunzip -c "${f}" | eval "${MYSQL_CMD}" ;;
-        *)        echo "init: ignoring ${f}: not a recognized format" ;;
-      esac
-    done
-
-    # Clean up
-    kill -s TERM "${PID}"
-    echo "init: removing mysql client"
-    apk del -q --no-cache mariadb-client
-  else
-    MYSQLD_OPTS="${MYSQLD_OPTS} --init-file=/tmp/init"
-  fi
+  MYSQLD_OPTS="${MYSQLD_OPTS} --init-file=/tmp/init"
+  
 fi
 
 # make sure directory permissions are correct before starting up
